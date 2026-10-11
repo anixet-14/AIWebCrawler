@@ -31,6 +31,13 @@ class Product(BaseModel):
         value = str(value).strip().upper()
         return value if len(value) == 3 and value.isalpha() else None
 
+    @field_validator("availability", mode="after")
+    @classmethod
+    def normalize_schema_availability(cls, value: str | None):
+        if not value: return None
+        token = value.rstrip("/").rsplit("/", 1)[-1] if "schema.org/" in value else value
+        return {"InStock": "In stock", "OutOfStock": "Out of stock", "PreOrder": "Pre-order", "BackOrder": "Back-order"}.get(token, value)
+
     @field_validator("price", "rating", mode="before")
     @classmethod
     def nonnegative_number(cls, value: Any):
