@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Universal Product Extractor</title>
+  <style>
+    :root{font-family:system-ui,sans-serif;color:#172033;background:#f4f7fb}.wrap{max-width:760px;margin:48px auto;padding:0 20px}.box{background:#fff;border-radius:16px;padding:28px;box-shadow:0 8px 28px #18233a18}h1{margin:0 0 8px}p{color:#526174}input,button{font:inherit;padding:12px;border-radius:8px}input{width:100%;box-sizing:border-box;border:1px solid #ccd5e1;margin:14px 0}button{border:0;background:#1769e0;color:white;font-weight:650;cursor:pointer}button:disabled{opacity:.6;cursor:wait}pre{background:#101827;color:#e7efff;border-radius:10px;padding:16px;overflow:auto;white-space:pre-wrap}.note{font-size:.9rem}.error{color:#b42318}
+  </style>
+</head>
+<body><main class="wrap"><section class="box">
+  <h1>Universal Product Extractor</h1>
+  <p>Cloudflare fetches the product page remotely; Gemini extracts the validated JSON.</p>
+  <input id="url" type="url" placeholder="https://store.example/product" aria-label="Product URL">
+  <button id="extract">Extract product</button>
+  <p id="status" class="note" role="status"></p>
+  <pre id="result" hidden></pre>
+</section></main>
+<script>
+const button=document.getElementById('extract'),url=document.getElementById('url'),status=document.getElementById('status'),result=document.getElementById('result');
+button.addEventListener('click',async()=>{result.hidden=true;status.className='note';if(!url.value){status.textContent='Enter a public product URL.';status.className='error';return}button.disabled=true;status.textContent='Cloudflare is fetching the page and Gemini is extracting fields…';try{const r=await fetch('/api/extract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url.value,use_llm:true,fetch_mode:'cloudflare',debug:true})});const data=await r.json();if(!r.ok)throw new Error(data.detail||'Extraction failed');result.textContent=JSON.stringify(data,null,2);result.hidden=false;status.textContent='Validated extraction complete.'}catch(e){status.textContent=e.message;status.className='error'}finally{button.disabled=false}});
+</script>
+</body></html>

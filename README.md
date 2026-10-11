@@ -8,7 +8,7 @@ A demo-minded prototype that extracts the required ten-field product JSON withou
 cd C:\path\to\universal-product-crawler
 py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 Copy-Item .env.example .env
 uvicorn app.main:app --reload
 # another terminal
@@ -22,6 +22,10 @@ The tests and metadata-only mode need no model. For semantic extraction, create 
 ## Cloudflare demo setup
 
 Copy `.env.example` to `.env`, then replace `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, and `GEMINI_API_KEY`. The Cloudflare token needs the narrow `Browser Run - Edit` permission. Do not share or commit `.env`. The default remote limit is five requests per server process/day; alter `UPC_REMOTE_DAILY_LIMIT` only while remaining inside Cloudflare's free allowance. Remote mode makes a single Cloudflare Browser Run `/content` request, with media/fonts/images blocked, and does not rotate IPs, solve CAPTCHAs, or attempt to bypass access controls. Select **Cloudflare remote browser** in the UI (or omit `fetch_mode` from the API request).
+
+## Vercel demo deployment
+
+Vercel serves `public/index.html` and runs the FastAPI app from `api/index.py`; Streamlit is local-only. Push this folder to a private GitHub repository, import it at Vercel, and add `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `GEMINI_API_KEY`, `GEMINI_MODEL`, and `UPC_REMOTE_DAILY_LIMIT` as Vercel environment variables. Never commit `.env`. The deployed endpoint is public: use Vercel deployment protection or do not share the URL beyond your demo audience, because each request spends your Cloudflare/Gemini quota.
 
 Example:
 ```powershell
